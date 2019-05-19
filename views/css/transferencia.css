@@ -1,0 +1,28 @@
+.green {
+    background-color: rgb(38, 172, 38);
+}
+
+.blue {
+    background-color: rgb(14, 49, 243);
+}
+
+.orange {
+    background-color: rgb(228, 62, 11);
+}
+
+.letrasblancas {
+    color: white;
+}
+
+.completo{
+    width: 100%;
+}
+
+.medio {
+    width: 50%;
+}
+
+.margen{
+    margin-left: 2%;
+    margin-right: 2%;
+}
