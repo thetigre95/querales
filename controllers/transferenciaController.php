@@ -57,6 +57,22 @@ if ($mode == 'loadAll'){
 	$cedula = $_POST["cedula"];
 	$response = $objcliente->getcliente($cedula);
 	echo json_encode($response, JSON_UNESCAPED_UNICODE);
+}elseif($mode == "modificarTransferencia"){
+	$id = $_POST["id"];
+	$cedula = $_POST["cedula"];
+	$nombre = $_POST["nombre"];
+	$monto = $_POST["monto"];
+	$banco = $_POST["banco"];
+	$cuenta = $_POST["cuenta"];
+	$estatus = $_POST["estatus"];
+
+	$response = $objTransferencia->updateTransferencia($id,$cedula,$nombre,$monto,$banco,$cuenta,$estatus);
+
+	if($response){
+		$result = $objTransferencia->getAll();
+		$response = $objTransferencia->formatQueryAll($result);
+	}
+	echo json_encode($response, JSON_UNESCAPED_UNICODE);
 }
 
 ?>

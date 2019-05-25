@@ -150,4 +150,17 @@ class Transferencia {
         return $db->insertarRegistro($this->tableTransferencia, $data);
     }
 
+    public function updateTransferencia($id,$cedula, $nombre, $monto, $banco, $cuenta, $estatus) {
+        global $db;
+        $data = array(
+            'cedula' => $cedula,
+            'nombre' => $nombre,
+            'monto' => $monto,
+            'banco' => $banco,
+            'cuenta' => $cuenta,
+            'estatus' => $estatus,
+        );
+        return $db->actualizarRegistro($this->tableTransferencia,$id,$data);
+    }
+
 }

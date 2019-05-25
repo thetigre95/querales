@@ -49,20 +49,10 @@ function cargarTransferencias(realizadas,pendientes){
               <td id="cedula${transf.id}">${transf.cedula}</td>
               <td id="monto${transf.id}">${transf.monto}</td>
               <td id="detalles${transf.id}">
-              <button type="button" class="btn btn-link btn-primary col-4" title="See more"
-              onclick="verDetallesOrden(${transf.id})" data-toggle="tooltip"
+              <button type="button" class="btn btn-link btn-primary" title="Detalles"
+              onclick="verDetalles(${transf.id})" data-toggle="tooltip"
               data-placement="top">
               <i class="far fa-address-card"></i>
-      </button>
-      <button type="button" class="btn btn-link btn-danger col-4" title="Cancel order"
-        onclick="cancelarOrden(${transf.id})" data-toggle="tooltip"
-        data-placement="top">
-        <i class="material-icons">cancel</i>
-      </button>
-      <button type="button" class="btn btn-link btn-success col-4" title="reschedule"
-        onclick="reprogramarOrden(${transf.id})" data-toggle="tooltip"
-        data-placement="top">
-        <i class="material-icons">assignment</i>
       </button>
            </td>
             </tr>`
@@ -78,20 +68,15 @@ function cargarTransferencias(realizadas,pendientes){
             <td id="cedula${transf.id}">${transf.cedula}</td>
             <td id="monto${transf.id}">${transf.monto}</td>
             <td id="detalles${transf.id}">
-            <button type="button" class="btn btn-link btn-primary col-4" title="See more"
-            onclick="verDetallesOrden(${transf.id})" data-toggle="tooltip"
+            <button type="button" class="btn btn-link btn-primary" title="Detalles"
+            onclick="verDetalles(${transf.id})" data-target="#modificarModal" data-toggle="tooltip"
             data-placement="top">
         <i class="material-icons">visibility</i>
     </button>
-    <button type="button" class="btn btn-link btn-danger col-4" title="Cancel order"
-      onclick="cancelarOrden(${transf.id})" data-toggle="tooltip"
+    <button type="button" class="btn btn-link btn-success" title="Cancel order"
+      onclick="actualizarpago(${transf.id})" data-toggle="tooltip"
       data-placement="top">
-      <i class="material-icons">cancel</i>
-    </button>
-    <button type="button" class="btn btn-link btn-success col-4" title="reschedule"
-      onclick="reprogramarOrden(${transf.id})" data-toggle="tooltip"
-      data-placement="top">
-      <i class="material-icons">assignment</i>
+      <i class="material-icons">check_circle</i>
     </button>
          </td>
           </tr>`
@@ -180,6 +165,7 @@ function cargarBancos() {
       $.each(res["bancos"], function (index, banco) {
         bancos[banco.id] = banco;
         $("#banco").append("<option value=" + banco.id + ">" + banco.nombre + "</option>")
+        $("#mbanco").append("<option value=" + banco.id + ">" + banco.nombre + "</option>")
       });
     }, error(err) {
       console.log(err);
@@ -188,8 +174,11 @@ function cargarBancos() {
 }
 function cargarCuentas(banco) {
   $("#cuenta").html("<option value='0' selected>Seleccione...</option>")
+  $("#mcuenta").html("<option value='0' selected>Seleccione...</option>")
+
   $.each(bancos[banco.value].cuentas, function (index, cuenta) {
-    $("#cuenta").append("<option value=" + cuenta.id + ">" + cuenta.nombre + "-" + cuenta.cuenta.substr(cuenta.cuenta.length - 4, cuenta.cuenta.length - 1) + "</option>")
+    $("mcuenta").append("<option value=" + cuenta.id + ">" + cuenta.nombre + "-" + cuenta.cuenta.substr(cuenta.cuenta.length - 4, cuenta.cuenta.length - 1) + "</option>")
+    $("#mcuenta").append("<option value=" + cuenta.id + ">" + cuenta.nombre + "-" + cuenta.cuenta.substr(cuenta.cuenta.length - 4, cuenta.cuenta.length - 1) + "</option>")
 
   })
 }
@@ -277,6 +266,97 @@ function registrarTransferencia() {
   }
 }
 
+function verDetalles(id) {
+  transf = transferencias[id];
+  
+  $("#mnombre").val(transf.nombre);//extraer el valor de la caja de texto
+  $("#mcedula").val(transf.cedula);
+  $("mmonto").val(transf.monto);
+  $("#mbanco").val(transf.cuenta[0].banco[0].id);
+  $("#mbanco").change();
+  setTimeout(function(){
+    $("#mcuenta").val(transf.cuenta[0].id)
+  },1000)
+  $("#mcuenta").change();
+  $("#mestatus").val(transf.estatus);
+  $("#mestatus").change();
+    
+}
+
+function modificarTransferencia(id) {
+
+  var nombre = $("[name='nombre']").val();//extraer el valor de la caja de texto
+  var cedula = $("[name='cedula']").val();
+  var monto = $("[name='monto']").val();
+  var banco = $("#banco").val();
+  var cuenta = $("#cuenta").val();
+  var estatus = $("#estatus").val();
+  var validacion = true;
+  var falta = ""
+
+  if (nombre == "") {
+
+    falta+= "Nombre del cliente";
+
+    validacion = false;
+  }
+  if (cedula == "") {
+
+    falta+= ",cedula valida";
+    validacion = false;
+  }
+  if (monto == 0) {
+
+    falta+= ", monto valido";
+    validacion = false;
+  }
+
+  if (banco == undefined || banco == 0) {
+
+    falta+= ", Banco valido";
+    validacion = false;
+  }
+  if (cuenta == undefined || cuenta == 0) {
+
+
+    falta+= " ,Cuenta valida"
+    validacion = false;
+  }
+
+  if (validacion) {
+    $.ajax({
+      type: "POST",
+      data: { mode: "modificarTransferencia",id: id, nombre: nombre, cedula: cedula, monto: monto, banco: banco, cuenta: cuenta, estatus: estatus },
+      url: host + "transferenciaController.php",
+      success: function (data) {
+        var res = JSON.parse(data);
+        toastr.success("Registro guardado exitosamente")
+        limpiar()
+        console.log(res)
+        cargarTransferencias(res["Realizadas"],res["Pendientes"])
+      }
+    });
+  } else {
+    toastr.options = {
+      "closeButton": false,
+      "debug": false,
+      "newestOnTop": false,
+      "progressBar": true,
+      "positionClass": "toast-bottom-full-width",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "hideMethod": "fadeOut"
+    }
+    toastr.warning("<b>" + falta + "</b> ")
+  }
+}
+
 function obtenerCliente(){
   var cedula = $("[name='cedula']").val();
   var check = $("#titular")[0].checked;
@@ -299,13 +379,20 @@ function obtenerCliente(){
 
 function limpiar(){
   $("[name='nombre']").val("")
-  var cedula = $("[name='cedula']").val("");
-  var monto = $("[name='monto']").val("");
-  var banco = $("#banco").val(0);
-  var cuenta = $("#cuenta").val(0);
-  var estatus = $("#estatus").val(1);
+  $("[name='cedula']").val("");
+  $("[name='monto']").val("");
+  $("#banco").val(0);
+  $("#cuenta").val(0);
+  $("#estatus").val(1);
   
+  $("#mnombre").val("")
+  $("#mcedula").val("");
+  $("#mmonto").val("");
+  $("#banco").val(0);
+  $("#cuenta").val(0);
+  $("#estatus").val(1);
 }
+
 function soloLetras(e) {
   key = e.keyCode || e.which;
   tecla = String.fromCharCode(key).toLowerCase();

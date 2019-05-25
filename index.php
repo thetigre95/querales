@@ -9,7 +9,7 @@
   <title>Querales-Transferencias</title>
 
   <!-- Font Icon -->
-  <link rel="stylesheet" href="assets/fonts/material-icon/css/material-design-iconic-font.min.css">
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
 
   <!-- Main css -->
   <link rel="stylesheet" href="assets/css/bootstrap.min.css">
@@ -124,15 +124,15 @@
   </div>
 
   <!--Modal de los detalles de una trasnferencia -->
-  <div class="modal fade" id="transferenciaModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="transferenciaModal" tabindex="-1" role="dialog" aria-labelledby="transferenciaModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
 
         <!-- Modal Header -->
         <div class="modal-header text-center blue">
           <div class="row completo">
-            <div class="col-12 col-md-10">
-              <h4 class="modal-title letrasblancas" id="transferenciaModal">Nueva Transferencia</h4>
+            <div class="col-12 col-md-10" id="titulomodal">
+              <h4 class="modal-title letrasblancas">Nueva Transferencia</h4>
             </div>
             <div class="col-12 col-md-2">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -216,7 +216,99 @@
       </div>
     </div>
   </div>
+  <!-- //modificar y ver detalles-->
+  <div class="modal fade" id="modificarModal" tabindex="-1" role="dialog" aria-labelledby="transferenciaModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
 
+        <!-- Modal Header -->
+        <div class="modal-header text-center blue">
+          <div class="row completo">
+            <div class="col-12 col-md-10" id="titulomodal">
+            <h4 class="modal-title letrasblancas">Modificar Transferencia</h4>
+            </div>
+            <div class="col-12 col-md-2">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span class="letrasblancas" aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body text-center">
+            <form id="formEmpleado">
+              <div class="row">
+              <div class="col-md-12">
+                  <div class="form-group row">
+                    <div class="col-12 col-md-1"></div>
+                    <label class="col-11 col-md-3 bmd-label-floating">Cedula</label>
+                    <input id="mcedula" type="text" placeholder="Cedula" class="col-11 col-md-7 form-control" onkeypress="soloNumeros(event)" placeholder="monto > 0">
+                    <div class="col-1 col-md-1">
+                      <input type="checkbox" id="titular" class="form-control" onchange="obtenerCliente()">
+                      
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group row">
+                    <div class="col-12 col-md-1"></div>
+                    <label class="col-12 col-md-3 bmd-label-floating">Nombre: </label>
+                    <input id="mnombre" placeholder="Nombre" type="text" class="col-12 col-md-7 form-control" onkeypress="return soloLetras(event)">
+                    <div class="col-12 col-md-1"></div>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group row">
+                    <div class="col-12 col-md-1"></div>
+                    <label class="col-12 col-md-3 bmd-label-floating">Monto</label>
+                    <input id="mmonto" type="number" min="0" max="10000000000000" class="col-12 col-md-7 form-control" onchange="validarNumero(this)">
+                    <div class="col-12 col-md-1"></div>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group row">
+                    <div class="col-12 col-md-1"></div>
+                    <label class="col-12 col-md-3 bmd-label-floating">Banco</label>
+                    <select class="col-12 col-md-7 custom-select" id="mbanco" onchange="cargarCuentas(this)">
+                      <option value="0" selected>Seleccione...</option>
+                    </select>
+                    <div class="col-12 col-md-1"></div>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group row">
+                    <div class="col-12 col-md-1"></div>
+                    <label class="col-12 col-md-3 bmd-label-floating">Cuenta</label>
+                    <select class="col-12 col-md-7 custom-select" id="mcuenta">
+                      <option value="0" selected>Seleccione...</option>
+                    </select>
+                    <div class="col-12 col-md-1"></div>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group row">
+                    <div class="col-12 col-md-1"></div>
+                    <label class="col-12 col-md-3 bmd-label-floating">Estado: </label>
+                    <select class="col-12 col-md-7 custom-select" id="mestatus">
+                      <option value="1" selected>Realizada</option>
+                      <option value="2">Pendiente</option>
+                    </select>
+                    <div class="col-12 col-md-1"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="clearfix"></div>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="registrarTransferencia()">Guardar</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
   <!-- JS -->
   <script src="assets/js/jquery.min.js"></script>
   <script src="assets/js/jquery-ui.min.js"></script>
